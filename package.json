@@ -1,0 +1,16 @@
+{
+  "name": "rain_coop",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "coffee-script": "^1.10.0",
+    "coffeelint": "^1.14.2",
+    "observable": "^2.1.4"
+  }
+}
