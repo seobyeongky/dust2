@@ -6,6 +6,7 @@ module.exports =
 
 		tex = new Texture
 		tex.loadFromFile "textures/#{texfile}"
+		print "is smooth : #{tex.smooth}"
 		sp.texture = tex
 
 		if width? && height?

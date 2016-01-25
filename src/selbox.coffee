@@ -6,7 +6,7 @@ o = require 'observable'
 
 module.exports =
 	make_selbox : (env) ->
-		{turn_player,cleaner} = env
+		{turn_player,cleaner,edge_map,E} = env
 
 		bg = make_sprite "frame0.png", 0.4 * UI.width, 0.2 * UI.height
 		bg.x = PADDING
@@ -36,7 +36,23 @@ module.exports =
 				other_turn_txt.string = "#{player.name}님의 턴#{postfix}"
 			return
 
-		set_player : ->
+		turn_player (player) ->
+			if player? && player.id == Player.me().id
+				count = 0
+				player.sel.length = 0
+
+				edge_map.edge_list(player.node).forEach (adj_node_id) ->
+					txt = txtlist[count]
+					txt.string = "#{count + 1}. #{adj_node_id}로 이동하기"
+					player.sel[count] = ->
+						E.emit 'move_to_adj_node', player, adj_node_id
+					count++
+
+				for i in [count...3]
+					txt = txtlist[i]
+					txt.string = ""
+
+			return
 
 		render : ->
 			UI.draw bg
@@ -50,3 +66,5 @@ module.exports =
 
 			txtlist.forEach (txt) ->
 				UI.draw txt
+
+			return

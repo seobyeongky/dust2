@@ -1,70 +1,74 @@
+EventEmitter = require './libs/EventEmitter/EventEmitter.min.js'
 _ = require 'underscore'
 o = require 'observable'
 
 FunctionBatch = require './utils/function_batch'
 {INPUT_CHAT_MESSAGE} = require './system/consts'
+{nodes,edges} = require './nodes.json'
 {Scheduler} = require './scheduler'
+{make_edgemap} = require './edge_map'
 {make_bg} = require './bg'
 {make_minimap} = require './minimap'
 {make_selbox} = require './selbox'
 init_players = require './init_players'
 
-
-main_key_color = (index) ->
-	switch index % 3
-		when 0
-			{r:0,g:0,b:0,a:255}
-		when 1
-			{r:50,g:50,b:50,a:255}
-		when 2
-			{r:255,g:255,b:240,a:255}
-
-sub_key_color = (index) ->
-	switch index % 3
-		when 0
-			{r:255,g:255,b:255,a:255}
-		when 1
-			{r:180,g:180,b:170,a:255}
-		when 2
-			{r:190,g:190,b:180,a:255}
-
 module.exports = (env) ->
 	env.cleaner = new FunctionBatch
 	env.RANDOM = (require './random') 1232
-	{players} = env
+	env.E = new EventEmitter
+	{E,players} = env
 	turn_player = env.turn_player = o null
-
 	scheduler = new Scheduler
+	edge_map = env.edge_map = make_edgemap nodes, edges
 	statboxes = []
 	init_players env, statboxes
 	bg = make_bg()
 	minimap = make_minimap env
 	selbox = make_selbox env
 
-	update_turn = ->
-		turn_player _.find players, (player) ->
+	notify_turn_end = (player) ->
+		print "#{player.name}님께서 턴을 마치셨습니다."
+
+	E.on 'move_to_adj_node', (player,node_id) ->
+		player.node = node_id
+		notify_turn_end player
+		E.emit 'update_turn'
+
+	E.on 'update_turn', ->
+		tplayer = _.find players, (player) ->
 			player.turn_used == false && player.hp() > 0
 
-		unless turn_player()?
+		unless tplayer?
 			unless (_.find players, (player) -> player.hp() > 0)?
 				# game over
+				turn_player null
 				print "모두 사망"
 				return
 
 			for player in (_.filter players, (player) -> player.hp() > 0)
 				player.turn_used = false
-			update_turn()
+			E.emit 'update_turn'
 			return
 
-		turn_player().turn_used = true
-		print "#{turn_player().name}님의 턴입니다."
+		tplayer.turn_used = true
+		print "#{tplayer.name}님의 턴입니다."
+		turn_player tplayer
 
-	scheduler.add update_turn, 0.5
+	scheduler.add (-> E.emit 'update_turn'), 0.5
 
 	handle_chat = (pid,text) ->
 		# dev-only feature
 		if text.length > 0 && text[0] == '#'
 			eval(text.substr(1))
+			return
+
+		input_num = parseInt(text)
+		tplayer = turn_player()
+		if tplayer? && tplayer.id == pid && 1 <= input_num && input_num <= 3
+			sel = tplayer.sel[input_num - 1]
+			if sel?
+				sel()
+
 
 	update = ->
 		scheduler.tick()

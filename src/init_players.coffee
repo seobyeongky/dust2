@@ -19,6 +19,7 @@ module.exports = (env,statboxes) ->
 		if player.id == Player.me().id
 			statboxes[i] = player.statbox = make_statbox player, i
 			player.visible = true
+			player.sel = []
 		else
 			statboxes[j] = player.statbox = make_statbox player, j
 			j++

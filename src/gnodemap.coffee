@@ -1,10 +1,7 @@
 {nodes,edges} = require './nodes.json'
 {make_sprite} = require './utils/sprite'
 {SMALL_PADDING,GNODE_PLAYER_CIRCULAR_PADDING} = require './consts'
-{make_edgemap} = require './edge_map'
 {alloc_rule_of_dot} = require './alloc_rule_of_dot'
-
-edge_map = make_edgemap nodes, edges
 
 module.exports =
 	make_gnodemap : (env,X,Y,S) ->
@@ -46,7 +43,6 @@ module.exports =
 							UI.draw gnodemap_avatar
 
 						render_queue_player.length = 0
-
 
 		render : ->
 			for player in players

@@ -10,7 +10,7 @@ module.exports =
 		bg.x = PADDING
 		bg.y = PADDING
 
-		gnodemap = make_gnodemap env, bg.x, bg.y, bg.scaleY
+		gnodemap = env.gnodemap = make_gnodemap env, bg.x, bg.y, bg.scaleY
 
 		render : ->
 			UI.draw bg
