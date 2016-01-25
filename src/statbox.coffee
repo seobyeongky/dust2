@@ -30,12 +30,24 @@ module.exports =
 		hp_txt.y = Y + SMALL_PADDING + TXT_HEIGHT + SMALL_PADDING
 		hp_txt.characterSize = TXT_HEIGHT
 		hp_txt.color = rgba(255, 255, 255, 255)
-		player.hp (hp) ->
-			hp_txt.string = "HP : #{player.hp()}"
 		
 		bloody = make_sprite "bloody.png", W, H
 		bloody.x = X
 		bloody.y = Y
+
+		hidden_overlay = make_sprite "hidden_overlay.png", W, H
+		hidden_overlay.x = X
+		hidden_overlay.y = Y
+
+		update_hp_txt = (hp) ->
+			hp_txt.string = "HP : #{hp}"
+
+		if player.id == Player.me().id
+			player.hp update_hp_txt
+		else
+			player.last_shown_stat (stat) ->
+				if stat?
+					update_hp_txt stat.hp
 
 		render : ->
 			unless player?
@@ -43,7 +55,10 @@ module.exports =
 
 			UI.draw bg
 
-			if player.visible
+			if player.id == Player.me().id || player.last_shown_stat()?
 				UI.draw avatar
 				UI.draw name_txt
 				UI.draw hp_txt
+
+			if player.visible == false
+				UI.draw hidden_overlay

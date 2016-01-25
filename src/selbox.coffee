@@ -37,7 +37,7 @@ module.exports =
 			return
 
 		turn_player (player) ->
-			if player? && player.id == Player.me().id
+			if player?
 				count = 0
 				player.sel.length = 0
 
