@@ -1,8 +1,6 @@
-EventEmitter = require './libs/EventEmitter/EventEmitter.min.js'
 _ = require 'underscore'
 o = require 'observable'
 
-FunctionBatch = require './utils/function_batch'
 {INPUT_CHAT_MESSAGE} = require './system/consts'
 {nodes,edges} = require './nodes.json'
 {Scheduler} = require './scheduler'
@@ -13,9 +11,6 @@ FunctionBatch = require './utils/function_batch'
 init_players = require './init_players'
 
 module.exports = (env) ->
-	env.cleaner = new FunctionBatch
-	env.RANDOM = (require './random') 1232
-	env.E = new EventEmitter
 	{E,players} = env
 	turn_player = env.turn_player = o null
 	scheduler = new Scheduler
