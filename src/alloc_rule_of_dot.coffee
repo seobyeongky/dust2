@@ -13,8 +13,8 @@ dict =
 
 	2 :
 		[
-			pos_from_angle 150, 0.5
-			pos_from_angle 30, 0.5
+			pos_from_angle 150, 0.7
+			pos_from_angle 30, 0.7
 		]
 
 	3 :
