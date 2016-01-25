@@ -1,8 +1,12 @@
-{PADDING,SMALL_PADDING,TXT_HEIGHT} = require './consts'
+_ = require 'underscore'
+
+{PADDING,SMALL_PADDING,TXT_HEIGHT,ITEM_ICON_HEIGHT} = require './consts'
 {make_sprite} = require './utils/sprite'
 
 module.exports =
-	make_statbox : (player,i) ->
+	make_statbox : (env,player,i) ->
+		{itembase} = env
+
 		W = 0.4 * UI.width
 		H = 0.2 * UI.height
 		X = UI.width - W - PADDING
@@ -42,12 +46,25 @@ module.exports =
 		update_hp_txt = (hp) ->
 			hp_txt.string = "HP : #{hp}"
 
+		sp_items = []
+		update_items = (item_ids) ->
+			sp_items.length = 0
+			for item_id, i in item_ids
+				itemdesc = _.find itembase, (itemdesc) -> itemdesc.id == item_id
+				sp = make_sprite itemdesc.icon, null, ITEM_ICON_HEIGHT
+				sp.x = AX + i * PADDING + PADDING
+				sp.y = Y + H - SMALL_PADDING - ITEM_ICON_HEIGHT
+				sp_items.push sp
+			return
+
 		if player.id == Player.me().id
 			player.hp update_hp_txt
+			player.items update_items
 		else
 			player.last_shown_stat (stat) ->
 				if stat?
 					update_hp_txt stat.hp
+					update_items stat.items
 
 		render : ->
 			unless player?
@@ -59,6 +76,8 @@ module.exports =
 				UI.draw avatar
 				UI.draw name_txt
 				UI.draw hp_txt
+				for sp_item in sp_items
+					UI.draw sp_item
 
 			if player.visible == false
 				UI.draw hidden_overlay

@@ -8,10 +8,13 @@ o = require 'observable'
 {make_bg} = require './bg'
 {make_minimap} = require './minimap'
 {make_selbox} = require './selbox'
+{make_itembase} = require './itembase'
 init_players = require './init_players'
+register_selector = require './rnd_item_selector'
 
 module.exports = (env) ->
 	{E,players} = env
+	itembase = env.itembase = []
 	turn_player = env.turn_player = o null
 	scheduler = new Scheduler
 	edge_map = env.edge_map = make_edgemap nodes, edges
@@ -20,6 +23,8 @@ module.exports = (env) ->
 	bg = make_bg()
 	minimap = make_minimap env
 	selbox = make_selbox env
+	itembase.push make_itembase(env)...
+	register_selector env
 
 	notify_turn_end = (player) ->
 		print "#{player.name}님께서 턴을 마치셨습니다."
@@ -95,6 +100,9 @@ module.exports = (env) ->
 		selbox.render()
 
 	## init commands ##
+	for player in players
+		player.add_items [0...3].map -> env.selector.select()
+
 	E.emit 'update_visibility'
 	scheduler.add (-> E.emit 'update_turn'), 0.5
 

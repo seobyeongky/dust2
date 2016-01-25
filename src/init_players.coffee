@@ -20,16 +20,26 @@ module.exports = (env,statboxes) ->
 		player.sel = []
 		player.node = rnd_node_list.pop()
 		player.last_shown_stat = o()
+		player.items = o []
 		if player.id == Player.me().id
-			statboxes[0] = player.statbox = make_statbox player, 0
+			statboxes[0] = player.statbox = make_statbox env, player, 0
 			player.visible = true
 		else
-			statboxes[j] = player.statbox = make_statbox player, j
+			statboxes[j] = player.statbox = make_statbox env, player, j
 			j++
 			player.visible = false
 
 		player.update_last_shown_stat = ->
 			player.last_shown_stat
 				hp : player.hp()
+				items : player.items().slice(0)
+
+		player.add_item = (item) ->
+			player.items().push item
+			player.items player.items()
+
+		player.add_items = (items) ->
+			player.items().push items...
+			player.items player.items()
 
 	return

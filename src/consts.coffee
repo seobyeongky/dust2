@@ -20,3 +20,5 @@ module.exports =
 	SMALL_PADDING : 0.025 * UI.height
 	TXT_HEIGHT : 0.03 * UI.height
 	GNODE_PLAYER_CIRCULAR_PADDING : 0.035 * UI.height
+
+	ITEM_ICON_HEIGHT : 0.04 * UI.height
